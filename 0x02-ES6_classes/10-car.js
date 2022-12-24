@@ -53,9 +53,13 @@ export default class Car {
     }
   }
 
+  static get [Symbol.species]() {
+    return this;
+  }
+
   cloneCar() {
-    this.motor = undefined;
-    this.brand = 'Ford';
-    this.color = 'red';
+    const Species = this.constructor[Symbol.species];
+
+    return new Species();
   }
 }
