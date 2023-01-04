@@ -3,10 +3,10 @@ export default function updateStudentGradeByCity(array, query, changes) {
     return san.map(item => {
         for (const i of changes) {
             if (item.id == i.studentId) {
-                return {...item, grade: i.grade}
+                return {...item, grade: i.grade};
             }
             else{
-                return {...item, grade: 'N/A'}
+                return {...item, grade: 'N/A'};
             }
         }
     })
