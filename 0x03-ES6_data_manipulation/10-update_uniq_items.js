@@ -1,6 +1,6 @@
 export default function updateUniqueItems(map) {
   if (map.constructor.name !== 'Map') {
-    throw new Error('cannot process');
+    throw new Error('Cannot process');
   }
   for (const key of map.keys()) {
     if (map.get(key) === 1) {
@@ -8,3 +8,5 @@ export default function updateUniqueItems(map) {
     }
   }
 }
+
+updateUniqueItems(true);

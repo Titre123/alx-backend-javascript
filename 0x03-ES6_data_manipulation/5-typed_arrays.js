@@ -3,7 +3,7 @@ export default function createInt8TypedArray(length, position, value) {
     throw new TypeError('One of the paramenter is not of type Number');
   }
   if (position < 0 || position > length) {
-    return new Error('Position outside range ');
+    throw new Error('Position outside range ');
   }
 
   const buffer = new ArrayBuffer(length);
