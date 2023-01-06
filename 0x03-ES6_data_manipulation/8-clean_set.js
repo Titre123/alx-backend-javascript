@@ -18,5 +18,3 @@ export default function cleanSet(set, startstring) {
   });
   return result.substring(1);
 }
-
-console.log(cleanSet(new Set(['id-test', 'id-chicken', 'id-user', , 'id-id-'])))
