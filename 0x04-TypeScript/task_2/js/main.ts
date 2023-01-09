@@ -70,3 +70,16 @@ const executeWork: executeWorInterface = (employee: any) => {
         employee.workTeacherTasks();
     }
 }
+
+type Subjects = 'Math' | 'History';
+
+function teachClass(todayClass: Subjects): string {
+    let x: string = '';
+    if (todayClass == 'Math'){
+        x += 'Teaching Math';
+    }
+    else if (todayClass == 'History') {
+        x += 'Teaching History';
+    }
+    return x;
+}
