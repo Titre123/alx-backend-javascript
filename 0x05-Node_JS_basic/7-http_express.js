@@ -43,3 +43,5 @@ app.get('/students', (req, res) => {
     res.send(str);
   });
 });
+
+module.exports = app;
