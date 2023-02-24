@@ -11,7 +11,7 @@ function countStudents(path) {
     data = data.trim().split('\r\n');
     console.log(`Number of students: ${data.slice(1).length}`);
     const field = [];
-    for (const dat of data) {
+    for (const dat of data.slice(1)) {
       const datArr = dat.split(',');
       field.push(datArr[3]);
     }
@@ -19,10 +19,10 @@ function countStudents(path) {
     for (const dat of data) {
       for (const fild of new Set(field)) {
         const datArr = dat.split(',');
-        if (datArr.includes(fild) && fild in result === false ) {
+        if (datArr.includes(fild) && fild in result === false) {
           result[fild] = [];
           result[fild].push(datArr[0]);
-        }else if (datArr.includes(fild) && fild in result === true) {
+        } else if (datArr.includes(fild) && fild in result === true) {
           result[fild].push(datArr[0]);
         }
       }
