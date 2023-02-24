@@ -2,7 +2,7 @@
   Function takes in an argument and print it to stdout
 */
 function displayMessage(args) {
-    process.stdout.write(args);
+    console.log(args);
 }
 
 module.exports = displayMessage;
