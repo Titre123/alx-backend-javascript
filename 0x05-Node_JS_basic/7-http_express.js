@@ -2,30 +2,57 @@ const fs = require('fs');
 const express = require('express');
 
 const app = express();
+const DB_FILE = process.argv.length > 2 ? process.argv[2] : '';
 
-const countStudents = (database) => new Promise((resolve, rejects) => {
-  if (!fs.existsSync(database)) {
-    rejects(new Error('Cannot load the database'));
-  } else {
-    fs.readFile(database, (err, data) => {
-      if (err) rejects(new Error('Cannot load the database'));
-      data = data.toString();
-      data = data.trim().split('\r\n');
-      const CS = [];
-      const SWE = [];
-      const output = [];
-      for (const dat of data) {
-        const datArr = dat.split(',');
-        if (datArr.includes('CS')) {
-          CS.push(datArr[0]);
-        } else if (datArr.includes('SWE')) {
-          SWE.push(datArr[0]);
-        }
+const countStudents = (dataPath) => new Promise((resolve, reject) => {
+  if (!dataPath) {
+    reject(new Error('Cannot load the database'));
+  }
+  if (dataPath) {
+    fs.readFile(dataPath, (err, data) => {
+      if (err) {
+        reject(new Error('Cannot load the database'));
       }
-      output.push(`Number of students: ${data.slice(1).length}`);
-      output.push(`Number of students in CS: ${CS.length}. List: ${CS.join(', ')}`);
-      output.push(`Number of students in SWE: ${SWE.length}. List: ${SWE.join(', ')}`);
-      resolve(output);
+      if (data) {
+        const reportParts = [];
+        const fileLines = data.toString('utf-8').trim().split('\n');
+        const studentGroups = {};
+        const dbFieldNames = fileLines[0].split(',');
+        const studentPropNames = dbFieldNames.slice(
+          0,
+          dbFieldNames.length - 1,
+        );
+
+        for (const line of fileLines.slice(1)) {
+          const studentRecord = line.split(',');
+          const studentPropValues = studentRecord.slice(
+            0,
+            studentRecord.length - 1,
+          );
+          const field = studentRecord[studentRecord.length - 1];
+          if (!Object.keys(studentGroups).includes(field)) {
+            studentGroups[field] = [];
+          }
+          const studentEntries = studentPropNames.map((propName, idx) => [
+            propName,
+            studentPropValues[idx],
+          ]);
+          studentGroups[field].push(Object.fromEntries(studentEntries));
+        }
+
+        const totalStudents = Object.values(studentGroups).reduce(
+          (pre, cur) => (pre || []).length + cur.length,
+        );
+        reportParts.push(`Number of students: ${totalStudents}`);
+        for (const [field, group] of Object.entries(studentGroups)) {
+          reportParts.push([
+            `Number of students in ${field}: ${group.length}.`,
+            'List:',
+            group.map((student) => student.firstname).join(', '),
+          ].join(' '));
+        }
+        resolve(reportParts.join('\n'));
+      }
     });
   }
 });
@@ -35,12 +62,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/students', (req, res) => {
-  countStudents(database).then((data) => {
-    let str = 'This is the list of our students\n';
-    for (const _ of data) {
-      str = `${str + _}\n`;
-    }
-    res.send(str);
+  countStudents(DB_FILE).then((data) => {
+    const responseParts = ['This is the list of our students'];
+    responseParts.push(data);
+    const responseText = responseParts.join('\n');
+    res.send(Buffer.from(responseText));
   });
 });
 
